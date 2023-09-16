@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Portal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Employee Portal</h1>
+    </header>
+
+    <main>
+        <section id="login">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required><br><br>
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required><br><br>
+
+                <button type="submit">Login</button>
+            </form>
+        </section>
+
+        <section id="profile" style="display: none;">
+            <h2>Employee Profile</h2>
+            <!-- Display employee profile information here -->
+        </section>
+
+        <section id="leave" style="display: none;">
+            <h2>Leave Request</h2>
+            <form id="leaveForm">
+                <!-- Leave request form as previously defined -->
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Employee Portal</p>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
