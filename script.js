@@ -1,6 +1,6 @@
 // Handle login form submission
 
-const apiEndpoint= "http://127.0.0.1:8080/api/v1"
+const apiEndpoint= "https://employee-management-service.onrender.com/api/v1"
 
 document.getElementById("loginForm").addEventListener("submit",async function (e) {
     e.preventDefault();
@@ -140,11 +140,24 @@ const generateLeaveRequests=async()=>{
     document.getElementById("leaveRequests").innerHTML=finalString
 }
 
-document.getElementById("leaveRequestForm").addEventListener("submit", function(){
-    debugger
-    const startDate=document.getElementById("startData").value
+document.getElementById("leaveRequestForm").addEventListener("submit",async function(){
+    const startDate=document.getElementById("startDate").value
     const endDate=document.getElementById("endDate").value
-
+    const description=document.getElementById("reason").value
+    const leaveType=document.getElementById("leaveType").value
     debugger
+    let uploadLeaveRequest=await fetch(apiEndpoint+"/api/v1/leave",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":localStorage.getItem("accessToken")
+        },
+        body: JSON.stringify({
+            "tp":startDate,
+            "from":from,
+            "description":description,
+
+        })
+    })
     console.log(startDate,endDate)
 })
