@@ -1,10 +1,10 @@
 // Handle login form submission
-const response = await fetch('./config.json');
-const jsonData = await response.json();
-const apiEndpoint= jsonData["apiEndpoint"]
+
+const apiEndpoint= "http://127.0.0.1:8080/api/v1"
 
 document.getElementById("loginForm").addEventListener("submit",async function (e) {
     e.preventDefault();
+
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
@@ -20,28 +20,9 @@ document.getElementById("loginForm").addEventListener("submit",async function (e
     });
 
     if(loginResult.status==200){
-        document.getElementById("profile").style.display = "block";
-        document.getElementById("leave").style.display = "block";
-        document.getElementById("login").style.display = "none";
-        document.getElementById("alertContainer").style.display = "none";
         const jsonResponse=await loginResult.json()
-
         localStorage.setItem("accessToken",jsonResponse["accessToken"])
-
-        let userData=await fetch(apiEndpoint+"/employee/1",{
-            method:"GET",
-            headers:{
-                "Content-Type":"application/json"
-            }
-        })
-        userData=await userData.json()
-
-        document.getElementById("firstName").innerText=userData["firstName"]
-        document.getElementById("lastName").innerText=userData["lastName"]
-        document.getElementById("dob").innerText=userData["dob"]
-        document.getElementById("sex").innerText=userData["sex"]
-
-
+        await populateUserDetails()
     }else{
 
         document.getElementById('alertContainer').innerHTML = `
@@ -54,29 +35,116 @@ document.getElementById("loginForm").addEventListener("submit",async function (e
 
 document.addEventListener("DOMContentLoaded",async function () {
     var token = localStorage.getItem("accessToken");
-    debugger
-    const apiEndPoint=apiEndpoint+"/login/validate-token"
-    debugger
     console.log("This is working")
 
-    const loginResult = await fetch(apiEndPoint, {
+    if(token!=null) {
+        const loginResult=await fetch((apiEndpoint+"/login/validate-token"),{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":localStorage.getItem("accessToken")
+            }
+        })
+        console.log("LOgin result "+loginResult.status)
+        if(loginResult.status!=200) {
+            localStorage.removeItem("accessToken")
+            token=null
+        }
+    }
+
+    if (token) {
+        await populateUserDetails()
+    }else{
+        document.getElementById("logout").style.display="none";
+        document.getElementById("ApplyleaveRequests").style.display="none";
+    }
+});
+
+const populateUserDetails =async ()=>{
+    document.getElementById("profile").style.display = "block";
+    document.getElementById("employment").style.display = "block";
+    document.getElementById("leave").style.display = "block";
+    document.getElementById("logout").style.display="block";
+    document.getElementById("ApplyleaveRequests").style.display="block";
+    document.getElementById("login").style.display = "none";
+    document.getElementById("alertContainer").style.display = "none";
+
+    let userData=await fetch((apiEndpoint+"/employee"),{
         method:"GET",
         headers:{
             "Content-Type":"application/json",
-            "Authorization":token
+            "Authorization":localStorage.getItem("accessToken")
         }
-    });
+    })
+    userData=await userData.json()
+
+    document.getElementById("firstName").innerHTML='<label className="form-label">First Name : </label>'+userData["firstName"]
+    document.getElementById("lastName").innerHTML='<label className="form-label">Last Name : </label>'+userData["lastName"]
+    document.getElementById("dob").innerHTML='<label className="form-label">DOB : </label>'+userData["dob"]
+    document.getElementById("sex").innerHTML='<label className="form-label">Gender : </label>'+userData["sex"]
+
+    let employeeDate= await fetch((apiEndpoint+"/employment"),{
+        method:"GET",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":localStorage.getItem("accessToken")
+        }
+    })
+    employeeDate=await employeeDate.json()
+
+    document.getElementById("workLocation").innerHTML='<label className="form-label">workLocation : </label>'+employeeDate["workLocation"]
+    document.getElementById("employmentType").innerHTML='<label className="form-label">employmentType : </label>'+employeeDate["employmentType"]
+    document.getElementById("careerLevel").innerHTML='<label className="form-label">careerLevel : </label>'+employeeDate["careerLevel"]
+    document.getElementById("managerId").innerHTML='<label className="form-label">managerId : </label>'+employeeDate["managerId"]
+    document.getElementById("department").innerHTML='<label className="form-label">department : </label>'+employeeDate["department"]
+    document.getElementById("team").innerHTML='<label className="form-label">team : </label>'+employeeDate["team"]
+    document.getElementById("hrid").innerHTML='<label className="form-label">hrid : </label>'+employeeDate["hrid"]
+    generateLeaveRequests()
+}
+
+document.getElementById("logoutForm").addEventListener("submit",async function(){
+    let logoutData=await fetch((apiEndpoint+"/login/signout"),{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":localStorage.getItem("accessToken")
+        }
+    })
+    localStorage.removeItem("accessToken")
+    location.reload()
+})
+
+const generateLeaveRequests=async()=>{
+
+    let leaveData=await fetch((apiEndpoint+"/leave"),{
+        method:"GET",
+        headers:{
+            "Content-Type":"application/json",
+            "Authorization":localStorage.getItem("accessToken")
+        }
+    })
+    leaveData=await leaveData.json()
+    let finalString = "";
+    finalString+='<ol type="1">';
+    leaveData.forEach((ele)=>{
+        finalString+='<li><ul>'
+        finalString+='<li><label className="form-label">To : </label>'+ele["to"]+'</li>'
+        finalString+='<li><label className="form-label">From : </label>'+ele["from"]+'</li>'
+        finalString+='<li><label className="form-label">Status : </label>'+ele["status"]+'</li>'
+        finalString+='<li><label className="form-label">Description : </label>'+ele["description"]+'</li>'
+        finalString+='<li><label className="form-label">Leave Type : </label>'+ele["leave Type"]+'</li>'
+        finalString+='</ul></li>'
+    })
+    finalString+='</ol>'
+
+    document.getElementById("leaveRequests").innerHTML=finalString
+}
+
+document.getElementById("leaveRequestForm").addEventListener("submit", function(){
     debugger
-    console.log("LOgin result "+loginResult.status)
-    if(loginResult.status!=200) {
-        localStorage.removeItem("accessToken")
-        token=null
-    }
+    const startDate=document.getElementById("startData").value
+    const endDate=document.getElementById("endDate").value
 
-
-    if (token) {
-        document.getElementById("profile").style.display = "block";
-        document.getElementById("leave").style.display = "block";
-        document.getElementById("login").style.display = "none";
-    }
-});
+    debugger
+    console.log(startDate,endDate)
+})

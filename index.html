@@ -12,6 +12,12 @@
     </header>
 
     <main>
+        <section id="logout">
+            <form id="logoutForm">
+            <button type="submit" class="btn btn-primary">Logout</button>
+            </form>
+        </section>
+
         <section id="login">
             <h2>Login</h2>
             <form id="loginForm">
@@ -31,7 +37,6 @@
 
         <section id="profile" style="display: none;">
             <h2>Employee Profile</h2>
-            <!-- Display employee profile information here -->
             <ul>
                 <li id="firstName"></li>
                 <li id="lastName"></li>
@@ -40,10 +45,39 @@
             </ul>
         </section>
 
+        <section id="employment" style="display: none;">
+            <h2>Employee Profile</h2>
+            <ul>
+                <li id="workLocation"></li>
+                <li id="employmentType"></li>
+                <li id="careerLevel"></li>
+                <li id="department"></li>
+                <li id="managerId"></li>
+                <li id="team"></li>
+                <li id="hrid"></li>
+            </ul>
+        </section>
+
         <section id="leave" style="display: none;">
-            <h2>Leave Request</h2>
+            <h2>Leave Requests</h2>
             <form id="leaveForm">
-                <!-- Leave request form as previously defined -->
+                <div id="leaveRequests"></div>
+            </form>
+        </section>
+
+        <section id="ApplyleaveRequests">
+            <h2>Submit Leave Request</h2>
+            <form id="leaveRequestForm">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required><br><br>
+
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required><br><br>
+
+                <label for="reason">Reason:</label>
+                <textarea id="reason" name="reason" rows="2" required></textarea><br><br>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </section>
     </main>
